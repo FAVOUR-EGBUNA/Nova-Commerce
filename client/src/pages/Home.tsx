@@ -1,6 +1,9 @@
 ﻿import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const heroImage =
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90";
+
 export default function Home() {
   return (
     <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
@@ -22,7 +25,7 @@ export default function Home() {
         <div className="mt-9 flex flex-wrap gap-4">
           <Link
             to="/shop"
-            className="flex items-center gap-3 bg-black px-7 py-4 text-sm font-semibold text-white transition hover:bg-neutral-800"
+            className="flex items-center gap-3 bg-black px-7 py-4 text-sm font-semibold !text-white transition hover:bg-neutral-800"
           >
             Shop collection
             <ArrowRight size={17} />
@@ -30,7 +33,7 @@ export default function Home() {
 
           <Link
             to="/shop"
-            className="border border-black px-7 py-4 text-sm font-semibold transition hover:bg-black hover:text-white"
+            className="border border-black px-7 py-4 text-sm font-semibold transition hover:bg-black hover:!text-white"
           >
             Explore arrivals
           </Link>
@@ -47,33 +50,40 @@ export default function Home() {
           <div>
             <p className="text-2xl font-bold">Free</p>
             <p className="mt-1 text-xs uppercase tracking-wider text-neutral-500">
-              Delivery over ?100k
+              Delivery over ₦100k
             </p>
           </div>
         </div>
       </div>
 
-      <div className="relative min-h-[500px] overflow-hidden bg-neutral-900 lg:min-h-[650px]">
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-700 via-neutral-900 to-black" />
+      <div className="group relative min-h-[500px] overflow-hidden bg-neutral-900 lg:min-h-[650px]">
+        <img
+          src={heroImage}
+          alt="NOVA new collection editorial"
+          className="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.02]"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
 
         <div className="absolute left-8 top-8 z-10">
-          <span className="bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest">
+          <span className="bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-black">
             New collection
           </span>
         </div>
 
         <div className="absolute bottom-8 left-8 right-8 z-10 text-white">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+          <p className="text-xs uppercase tracking-[0.3em] text-white/70">
             The Edit 01
           </p>
+
           <h2 className="mt-2 text-3xl font-semibold">Modern Form</h2>
-          <p className="mt-2 max-w-sm text-sm leading-6 text-white/65">
-            Refined silhouettes designed for movement, confidence and everyday wear.
+
+          <p className="mt-2 max-w-sm text-sm leading-6 text-white/75">
+            Refined silhouettes designed for movement, confidence and everyday
+            wear.
           </p>
         </div>
       </div>
     </section>
   );
 }
-
-
