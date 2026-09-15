@@ -14,6 +14,7 @@ import axios from "axios";
 
 import { api } from "../../lib/api";
 import { useWishlist, type WishlistItem } from "../../context/WishlistContext";
+import PageLoader from "../../components/ui/PageLoader";
 
 type UserData = {
   id: string;
@@ -157,11 +158,7 @@ export default function Account() {
   }
 
   if (isLoading) {
-    return (
-      <section className="mx-auto max-w-7xl px-6 py-24 text-center lg:px-8">
-        <p className="text-sm text-neutral-500">Loading your account...</p>
-      </section>
-    );
+    return <PageLoader message="Loading your account..." fullPage />;
   }
 
   if (error) {

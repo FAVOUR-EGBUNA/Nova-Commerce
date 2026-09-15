@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
+import PageLoader from "../../components/ui/PageLoader";
 
 type ApiProduct = {
   id: string;
@@ -38,15 +39,12 @@ const sizes = ["XS", "S", "M", "L", "XL"];
 
 export default function ProductDetails() {
   const { slug } = useParams();
-
   const navigate = useNavigate();
 
   const { addToCart } = useCart();
-
   const { isWishlisted, toggleWishlist } = useWishlist();
 
   const [selectedSize, setSelectedSize] = useState("M");
-
   const [isUpdatingWishlist, setIsUpdatingWishlist] = useState(false);
 
   const {
@@ -65,11 +63,7 @@ export default function ProductDetails() {
   });
 
   if (isLoading) {
-    return (
-      <div className="mx-auto max-w-7xl px-6 py-24 text-center text-sm text-neutral-500 lg:px-8">
-        Loading product...
-      </div>
-    );
+    return <PageLoader message="Loading product..." fullPage />;
   }
 
   if (isError || !product) {
@@ -90,7 +84,8 @@ export default function ProductDetails() {
   const currentProduct = product;
 
   const image =
-    currentProduct.images[0]?.url ?? "https://placehold.co/900x1100?text=NOVA";
+    currentProduct.images[0]?.url ??
+    "https://placehold.co/900x1100?text=NOVA";
 
   const saved = isWishlisted(currentProduct.id);
 

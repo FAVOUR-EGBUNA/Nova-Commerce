@@ -1,8 +1,11 @@
-﻿import { useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 import { api } from "../../lib/api";
 import ProductCard from "../../components/ui/ProductCard";
+import PageLoader from "../../components/ui/PageLoader";
 
 type ApiProduct = {
   id: string;
@@ -34,19 +37,56 @@ type ProductsResponse = {
 const categories = ["All", "Women", "Men", "Accessories", "Footwear"];
 
 export default function Shop() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const searchFromUrl = searchParams.get("search");
+
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [search, setSearch] = useState("");
+
+  const [search, setSearch] = useState(searchFromUrl ?? "");
+
   const [sort, setSort] = useState("featured");
+
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const response = await api.get<ProductsResponse>("/products");
+
       return response.data.data;
     },
   });
 
   const products = data ?? [];
+
+  useEffect(() => {
+    if (searchFromUrl !== null) {
+      setSearch(searchFromUrl);
+
+      window.setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  }, [searchFromUrl]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    setSearch(value);
+
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (value.trim()) {
+      nextParams.set("search", value);
+    } else {
+      nextParams.set("search", "");
+    }
+
+    setSearchParams(nextParams, {
+      replace: true,
+    });
+  };
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -58,12 +98,13 @@ export default function Shop() {
     }
 
     if (search.trim()) {
-      const query = search.toLowerCase();
+      const query = search.trim().toLowerCase();
 
       result = result.filter(
         (product) =>
           product.name.toLowerCase().includes(query) ||
-          product.category.name.toLowerCase().includes(query),
+          product.category.name.toLowerCase().includes(query) ||
+          product.description.toLowerCase().includes(query),
       );
     }
 
@@ -105,7 +146,7 @@ export default function Shop() {
                 onClick={() => setSelectedCategory(category)}
                 className={`rounded-full px-5 py-2.5 text-sm transition ${
                   selectedCategory === category
-                    ? "bg-black text-white"
+                    ? "bg-black !text-white"
                     : "border border-black/10 bg-white text-neutral-600 hover:border-black"
                 }`}
               >
@@ -115,13 +156,21 @@ export default function Shop() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <input
-              type="search"
-              placeholder="Search products..."
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              className="min-w-[220px] border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-black"
-            />
+            <div className="relative">
+              <Search
+                size={17}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+
+              <input
+                ref={searchInputRef}
+                type="search"
+                placeholder="Search products..."
+                value={search}
+                onChange={handleSearchChange}
+                className="min-w-[240px] border border-black/10 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-black"
+              />
+            </div>
 
             <select
               value={sort}
@@ -129,22 +178,19 @@ export default function Shop() {
               className="border border-black/10 bg-white px-4 py-3 text-sm outline-none"
             >
               <option value="featured">Featured</option>
+
               <option value="price-low">Price: Low to High</option>
+
               <option value="price-high">Price: High to Low</option>
             </select>
           </div>
         </div>
 
-        {isLoading && (
-          <div className="py-20 text-center text-sm text-neutral-500">
-            Loading products...
-          </div>
-        )}
+        {isLoading && <PageLoader message="Loading collection..." />}
 
         {isError && (
           <div className="border border-red-200 bg-red-50 px-5 py-6 text-sm text-red-700">
-            We could not load the products. Make sure the NOVA backend is
-            running on port 5001.
+            We could not load the products. Please try again.
           </div>
         )}
 
@@ -155,6 +201,28 @@ export default function Shop() {
                 {filteredProducts.length}{" "}
                 {filteredProducts.length === 1 ? "product" : "products"}
               </p>
+
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+
+                    const nextParams = new URLSearchParams(searchParams);
+
+                    nextParams.delete("search");
+
+                    setSearchParams(nextParams, {
+                      replace: true,
+                    });
+
+                    searchInputRef.current?.focus();
+                  }}
+                  className="text-xs font-semibold underline underline-offset-4"
+                >
+                  Clear search
+                </button>
+              )}
             </div>
 
             {filteredProducts.length > 0 ? (
@@ -179,6 +247,7 @@ export default function Shop() {
             ) : (
               <div className="py-20 text-center">
                 <p className="text-lg font-semibold">No products found.</p>
+
                 <p className="mt-2 text-sm text-neutral-500">
                   Try another category or search term.
                 </p>

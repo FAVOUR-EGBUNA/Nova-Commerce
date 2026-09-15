@@ -7,8 +7,11 @@ import ProductDetails from "./pages/shop/ProductDetails";
 import Cart from "./pages/shop/Cart";
 import Checkout from "./pages/shop/Checkout";
 import OrderSuccess from "./pages/shop/OrderSuccess";
+import Wishlist from "./pages/shop/Wishlist";
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+
 import Account from "./pages/account/Account";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
@@ -18,16 +21,26 @@ export default function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+
           <Route path="/shop" element={<Shop />} />
+
           <Route path="/products/:slug" element={<ProductDetails />} />
+
+          <Route path="/wishlist" element={<Wishlist />} />
+
           <Route path="/cart" element={<Cart />} />
+
           <Route path="/checkout" element={<Checkout />} />
+
           <Route path="/order-success" element={<OrderSuccess />} />
+
           <Route path="/account" element={<Account />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
+
         <Route path="/register" element={<Register />} />
+
         <Route path="/admin" element={<AdminDashboard />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -35,5 +48,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
-
